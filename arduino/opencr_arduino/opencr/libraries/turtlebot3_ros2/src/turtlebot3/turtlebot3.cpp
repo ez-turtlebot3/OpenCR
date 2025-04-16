@@ -119,7 +119,7 @@ static void update_motor_status(uint32_t interval_ms);
 static void update_battery_status(uint32_t interval_ms);
 static void update_analog_sensors(uint32_t interval_ms);
 static void update_joint_status(uint32_t interval_ms);
-
+static void update_analog_pins(uint32_t interval_ms);
 
 DYNAMIXEL::USBSerialPortHandler port_dxl_slave(SERIAL_DXL_SLAVE);
 DYNAMIXEL::Slave dxl_slave(port_dxl_slave, MODEL_NUM_DXL_SLAVE);
@@ -244,6 +244,13 @@ enum ControlTableItemAddr{
   ADDR_GOAL_CURRENT_WR_GRIPPER  = 343,
   ADDR_GOAL_CURRENT_RD          = 344,
 
+  ADDR_ANALOG_A0 = 350,
+  ADDR_ANALOG_A1 = 352,
+  ADDR_ANALOG_A2 = 354,
+  ADDR_ANALOG_A3 = 356,
+  ADDR_ANALOG_A4 = 358,
+  ADDR_ANALOG_A5 = 360,
+
 };
 
 typedef struct ControlItemVariables{
@@ -311,6 +318,8 @@ typedef struct ControlItemVariables{
   bool joint_goal_current_wr_joint;
   bool joint_goal_current_wr_gripper;
   bool joint_goal_current_rd;
+
+  uint16_t analog_pins[6]; // For A0-A5
 
 }ControlItemVariables;
 
@@ -452,6 +461,14 @@ void TurtleBot3Core::begin(const char* model_name)
   dxl_slave.addControlItem(ADDR_PROFILE_ACC_L, control_items.profile_acceleration[MortorLocation::LEFT]);
   dxl_slave.addControlItem(ADDR_PROFILE_ACC_R, control_items.profile_acceleration[MortorLocation::RIGHT]);
 
+  // Items for Analog pins
+  dxl_slave.addControlItem(ADDR_ANALOG_A0, control_items.analog_pins[0]);
+  dxl_slave.addControlItem(ADDR_ANALOG_A1, control_items.analog_pins[1]);
+  dxl_slave.addControlItem(ADDR_ANALOG_A2, control_items.analog_pins[2]);
+  dxl_slave.addControlItem(ADDR_ANALOG_A3, control_items.analog_pins[3]);
+  dxl_slave.addControlItem(ADDR_ANALOG_A4, control_items.analog_pins[4]);
+  dxl_slave.addControlItem(ADDR_ANALOG_A5, control_items.analog_pins[5]);
+
   if (p_tb3_model_info->has_manipulator == true) {
     control_items.joint_goal_position_wr_joint = false;
     control_items.joint_goal_position_wr_gripper = false;
@@ -562,9 +579,11 @@ void TurtleBot3Core::begin(const char* model_name)
   sensors.initIMU();
   sensors.calibrationGyro();
 
-  //To indicate that the initialization is complete.
-  sensors.makeMelody(1); 
+  // To indicate that the initialization is complete.
+  sensors.makeMelody(3);  // To indicate that we are running modified firmware
 
+  // Print a version message to Serial
+  DEBUG_PRINTLN("Running ANALOG-ENABLED firmware V20250410");
   DEBUG_PRINTLN("Begin End...");
 }
 
@@ -607,6 +626,7 @@ void TurtleBot3Core::run()
   update_battery_status(INTERVAL_MS_TO_UPDATE_CONTROL_ITEM);
   update_analog_sensors(INTERVAL_MS_TO_UPDATE_CONTROL_ITEM);
   update_joint_status(INTERVAL_MS_TO_UPDATE_CONTROL_ITEM);
+  update_analog_pins(INTERVAL_MS_TO_UPDATE_CONTROL_ITEM);
 
   // Packet processing with ROS2 Node.
   dxl_slave.processPacket();
@@ -1055,5 +1075,25 @@ void test_motors_with_buttons(uint8_t buttons)
       goal_velocity_from_button[VelocityType::ANGULAR]  = 0.0;
       move[VelocityType::ANGULAR] = false;
     }
+  }
+}
+
+/*******************************************************************************
+* Function definition to update analog pin values
+*******************************************************************************/
+void update_analog_pins(uint32_t interval_ms)
+{
+  static uint32_t pre_time = 0;
+
+  if(millis() - pre_time >= interval_ms){
+    pre_time = millis();
+
+    // Read all analog pins
+    control_items.analog_pins[0] = analogRead(A0);
+    control_items.analog_pins[1] = analogRead(A1);
+    control_items.analog_pins[2] = analogRead(A2);
+    control_items.analog_pins[3] = analogRead(A3);
+    control_items.analog_pins[4] = analogRead(A4);
+    control_items.analog_pins[5] = analogRead(A5);
   }
 }
