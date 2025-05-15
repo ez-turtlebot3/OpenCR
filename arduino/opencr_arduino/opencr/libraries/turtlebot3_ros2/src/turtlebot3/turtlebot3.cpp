@@ -358,6 +358,9 @@ void TurtleBot3Core::begin(const char* model_name)
   DEBUG_PRINTLN("Version : V221004R1");
   DEBUG_PRINTLN("Begin Start...");
 
+  // Initialize device_status
+  control_items.device_status = STATUS_NOT_CONNECTED_MOTORS;
+
   // Setting for Dynamixel motors
   ret = motor_driver.init();
   DEBUG_PRINTLN(ret==true?"Motor driver setup completed.":"Motor driver setup failed.");
@@ -804,6 +807,11 @@ static void dxl_slave_write_callback_func(uint16_t item_addr, uint8_t &dxl_err_c
 
   switch(item_addr)
   {
+    case ADDR_DEVICE_STATUS:
+      // Prevent direct writing to device_status from outside
+      dxl_err_code = DXL_ERR_ACCESS;
+      break;
+    
     case ADDR_MODEL_INFORM:
       control_items.model_inform = p_tb3_model_info->model_info;
       dxl_err_code = DXL_ERR_ACCESS;
