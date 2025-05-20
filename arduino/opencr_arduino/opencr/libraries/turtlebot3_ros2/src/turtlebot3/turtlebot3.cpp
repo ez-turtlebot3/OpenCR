@@ -133,6 +133,7 @@ enum ControlTableItemAddr{
   ADDR_CONNECT_ROS2    = 15,
   ADDR_CONNECT_MANIP   = 16,
 
+  ADDR_DEVICE_READY    = 17,  // Explicit readiness flag
   ADDR_DEVICE_STATUS   = 18,
   ADDR_HEARTBEAT       = 19,
 
@@ -259,6 +260,7 @@ typedef struct ControlItemVariables{
   uint32_t dev_time_millis;
   uint32_t dev_time_micros;
 
+  bool device_ready;  // Device ready flag
   int8_t device_status;
   uint8_t heart_beat;
   bool debug_mode;
@@ -359,6 +361,7 @@ void TurtleBot3Core::begin(const char* model_name)
   DEBUG_PRINTLN("Begin Start...");
 
   // Initialize device_status
+  control_items.device_ready = false;
   control_items.device_status = STATUS_NOT_CONNECTED_MOTORS;
 
   // Setting for Dynamixel motors
@@ -409,6 +412,7 @@ void TurtleBot3Core::begin(const char* model_name)
   dxl_slave.addControlItem(ADDR_CONNECT_MANIP, control_items.is_connect_manipulator);
 
   // Items to inform device status
+  dxl_slave.addControlItem(ADDR_DEVICE_READY, control_items.device_ready);
   dxl_slave.addControlItem(ADDR_DEVICE_STATUS, control_items.device_status);
   // Items to check connection state with node
   dxl_slave.addControlItem(ADDR_HEARTBEAT, control_items.heart_beat);
@@ -582,6 +586,8 @@ void TurtleBot3Core::begin(const char* model_name)
   sensors.initIMU();
   sensors.calibrationGyro();
 
+  // Mark device as ready after all initialization is complete
+  control_items.device_ready = true;
   // To indicate that the initialization is complete.
   sensors.makeMelody(3);  // To indicate that we are running modified firmware
 
