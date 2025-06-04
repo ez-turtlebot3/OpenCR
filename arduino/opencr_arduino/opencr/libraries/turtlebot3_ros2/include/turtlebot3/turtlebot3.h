@@ -39,6 +39,7 @@
 const uint8_t FIRMWARE_VER = 5; //DYNAMIXEL2Arduino v0.6.1 or higher is required.
 const uint32_t INTERVAL_MS_TO_CONTROL_MOTOR = 20;
 const uint32_t INTERVAL_MS_TO_UPDATE_CONTROL_ITEM = 20;
+const uint32_t INTERVAL_MS_TO_UPDATE_APINS = 250;
 
 namespace TurtleBot3Core{
   void begin(const char* model_name);
