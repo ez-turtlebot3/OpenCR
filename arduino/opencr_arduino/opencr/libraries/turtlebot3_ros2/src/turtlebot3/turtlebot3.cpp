@@ -586,6 +586,9 @@ void TurtleBot3Core::begin(const char* model_name)
   sensors.initIMU();
   sensors.calibrationGyro();
 
+  // Set analog pin resolution to 12 bits
+  analogReadResolution(12);
+
   // Mark device as ready after all initialization is complete
   control_items.device_ready = true;
   // To indicate that the initialization is complete.
@@ -635,7 +638,7 @@ void TurtleBot3Core::run()
   update_battery_status(INTERVAL_MS_TO_UPDATE_CONTROL_ITEM);
   update_analog_sensors(INTERVAL_MS_TO_UPDATE_CONTROL_ITEM);
   update_joint_status(INTERVAL_MS_TO_UPDATE_CONTROL_ITEM);
-  update_analog_pins(INTERVAL_MS_TO_UPDATE_CONTROL_ITEM);
+  update_analog_pins(INTERVAL_MS_TO_UPDATE_APINS);
 
   // Packet processing with ROS2 Node.
   dxl_slave.processPacket();
@@ -1101,7 +1104,7 @@ void update_analog_pins(uint32_t interval_ms)
 
   if(millis() - pre_time >= interval_ms){
     pre_time = millis();
-
+    
     // Read all analog pins
     control_items.analog_pins[0] = analogRead(A0);
     control_items.analog_pins[1] = analogRead(A1);
