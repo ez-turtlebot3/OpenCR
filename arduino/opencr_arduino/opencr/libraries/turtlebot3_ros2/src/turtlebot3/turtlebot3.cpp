@@ -1107,10 +1107,23 @@ void update_analog_pins(uint32_t interval_ms)
     
     // Read all analog pins
     control_items.analog_pins[0] = analogRead(A0);
+    // Serial.print(control_items.analog_pins[0]);
+    // Serial.print(",");
     control_items.analog_pins[1] = analogRead(A1);
+    // Serial.print(control_items.analog_pins[1]);
+    // Serial.print(",");
     control_items.analog_pins[2] = analogRead(A2);
+    // Serial.print(control_items.analog_pins[2]);
+    // Serial.print(",");
     control_items.analog_pins[3] = analogRead(A3);
+    // Serial.print(control_items.analog_pins[3]);
+    // Serial.print(",");
     control_items.analog_pins[4] = analogRead(A4);
+    // Serial.print(control_items.analog_pins[4]);
+    // Serial.print(",");
     control_items.analog_pins[5] = analogRead(A5);
+    // Serial.print(control_items.analog_pins[5]);
+    // Serial.println();
+
   }
 }
