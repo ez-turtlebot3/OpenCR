@@ -1,10 +1,10 @@
 # Overview
 
-This repository is a fork of [ROBOTIS-GIT/OpenCR](https://github.com/ROBOTIS-GIT/OpenCR). In this fork, the TurtleBot3 ROS2 firmware has been modified to read data from the analog pins A0-A5 of the OpenCR board.
+This repository is a fork of [ROBOTIS-GIT/OpenCR](https://github.com/ROBOTIS-GIT/OpenCR). The `read-analog-pins-tb3-ros2` branch has extended the TurtleBot3 ROS2 firmware to read data from the analog pins A0-A5 of the OpenCR board. The main branch is kept in sync with the original repository.
 
 Reading analog data is a key element of the [ez-turtlebot3 project](https://github.com/ez-turtlebot3/ez-turtlebot3), which combines this OpenCR fork with an [analog-enabled fork of the turtlebot3 repo](https://github.com/ez-turtlebot3/turtlebot3/tree/publish-analog-pins) and a separate [ROS 2 analog processor package](https://github.com/ez-turtlebot3/ez_analog_processor) to process and publish the analog data.
 
-We've also left a couple of arduino sketches in [read_analog_pins_from_OpenCR](read_analog_pins_from_OpenCR) that allow the user to plug the OpenCR directly into their PC's USB port to read analog pin data, therefore bypassing the TurtleBot3's Raspberry Pi and ROS 2 altogether.
+There are also a couple of arduino sketches in [read_analog_pins_from_OpenCR](read_analog_pins_from_OpenCR) that allow the user to plug the OpenCR directly into their PC's USB port to read analog pin data, therefore bypassing the TurtleBot3's Raspberry Pi and ROS 2 altogether.
 
 # TurtleBot3 ROS 2 Analog-Enabled Firmware Installation
 1. Connect the OpenCR board to the PC via USB to micro USB.
