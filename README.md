@@ -2,7 +2,7 @@
 
 This repository is a fork of [ROBOTIS-GIT/OpenCR](https://github.com/ROBOTIS-GIT/OpenCR). In this fork, the TurtleBot3 ROS2 firmware has been modified to read data from the analog pins A0-A5 of the OpenCR board.
 
-Reading analog data is a key element of the [ez-turtlebot3 project](https://github.com/ez-turtlebot3/ez-turtlebot3), which combines this OpenCR fork with an [analog-enabled fork of the turtlebot3 repo](https://github.com/ez-turtlebot3/turtlebot3) and a separate [ROS 2 analog processor package](https://github.com/ez-turtlebot3/ez_analog_processor) to process and publish the analog data.
+Reading analog data is a key element of the [ez-turtlebot3 project](https://github.com/ez-turtlebot3/ez-turtlebot3), which combines this OpenCR fork with an [analog-enabled fork of the turtlebot3 repo](https://github.com/ez-turtlebot3/turtlebot3/tree/publish-analog-pins) and a separate [ROS 2 analog processor package](https://github.com/ez-turtlebot3/ez_analog_processor) to process and publish the analog data.
 
 We've also left a couple of arduino sketches in [read_analog_pins_from_OpenCR](read_analog_pins_from_OpenCR) that allow the user to plug the OpenCR directly into their PC's USB port to read analog pin data, therefore bypassing the TurtleBot3's Raspberry Pi and ROS 2 altogether.
 
@@ -20,8 +20,9 @@ We've also left a couple of arduino sketches in [read_analog_pins_from_OpenCR](r
   * `arduino-cli core install OpenCR:OpenCR`
 5. Clone this analog-enabled OpenCR repo fork
   * `git clone https://github.com/ez-turtlebot3/OpenCR.git`
+  * `cd OpenCR`
+  * `git switch read-analog-pins-tb3-ros2`
 6. Upload the analog-enabled firmware
-  * `cd /path/to/OpenCR`
   * `arduino-cli compile --upload -v -p /dev/ttyACM0 --fqbn OpenCR:OpenCR:OpenCR --libraries=$(pwd)/arduino/opencr_arduino/opencr/libraries arduino/opencr_arduino/opencr/libraries/turtlebot3_ros2/examples/turtlebot3_burger/turtlebot3_burger.ino`
 7. Wait to hear the OpenCR melody, which indicates the upload was successful.
 8. Disconnect the OpenCR from the remote PC.
