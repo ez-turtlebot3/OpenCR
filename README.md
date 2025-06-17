@@ -1,6 +1,6 @@
 # Overview
 
-This repository is a fork of [ROBOTIS-GIT/OpenCR](https://github.com/ROBOTIS-GIT/OpenCR). The `read-analog-pins-tb3-ros2` branch has extended the TurtleBot3 ROS2 firmware to read data from the analog pins A0-A5 of the OpenCR board. The main branch is kept in sync with the original repository.
+This repository is a fork of [ROBOTIS-GIT/OpenCR](https://github.com/ROBOTIS-GIT/OpenCR). The `read-analog-pins-tb3-ros2` branch has extended the TurtleBot3 ROS2 firmware to read data from the analog pins A0-A5 of the OpenCR board. The `master` branch is kept in sync with the original repository.
 
 Reading analog data is a key element of the [ez-turtlebot3 project](https://github.com/ez-turtlebot3/ez-turtlebot3), which combines this OpenCR fork with an [analog-enabled fork of the turtlebot3 repo](https://github.com/ez-turtlebot3/turtlebot3/tree/publish-analog-pins) and a separate [ROS 2 analog processor package](https://github.com/ez-turtlebot3/ez_analog_processor) to process and publish the analog data.
 
