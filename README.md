@@ -1,3 +1,5 @@
+This repo is a fork of [OpenCR](https://github.com/ROBOTIS-GIT/OpenCR) by ROBOTIS. This master branch is kept in sync with the ROBOTIS repo. The `read-analog-pins-tb3-ros2` branch extends the TurtleBot3 ROS 2 firmware to read from the OpenCR analog pins A0-A5.
+
 # OpenCR: Open Source Control Module for ROS [![Build Status](https://travis-ci.org/ROBOTIS-GIT/OpenCR.svg?branch=master)](https://travis-ci.org/ROBOTIS-GIT/OpenCR/)
 ![](http://emanual.robotis.com/assets/images/parts/controller/opencr10/opencr_product.png)
 
