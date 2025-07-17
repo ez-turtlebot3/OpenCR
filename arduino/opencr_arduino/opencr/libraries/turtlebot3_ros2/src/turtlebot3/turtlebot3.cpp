@@ -117,7 +117,7 @@ static void update_times(uint32_t interval_ms);
 static void update_gpios(uint32_t interval_ms);
 static void update_motor_status(uint32_t interval_ms);
 static void update_battery_status(uint32_t interval_ms);
-static void update_analog_sensors(uint32_t interval_ms);
+// static void update_analog_sensors(uint32_t interval_ms);
 static void update_joint_status(uint32_t interval_ms);
 static void update_analog_pins(uint32_t interval_ms);
 
@@ -147,9 +147,16 @@ enum ControlTableItemAddr{
   ADDR_BUMPER_1        = 28,
   ADDR_BUMPER_2        = 29,
 
-  ADDR_ILLUMINATION    = 30,
-  ADDR_IR              = 34,
-  ADDR_SORNA           = 38,
+  // ADDR_ILLUMINATION    = 30,
+  // ADDR_IR              = 34,
+  // ADDR_SORNA           = 38,
+
+  ADDR_ANALOG_A0 = 30,
+  ADDR_ANALOG_A1 = 32,
+  ADDR_ANALOG_A2 = 34,
+  ADDR_ANALOG_A3 = 36,
+  ADDR_ANALOG_A4 = 38,
+  ADDR_ANALOG_A5 = 40,
 
   ADDR_BATTERY_VOLTAGE = 42,
   ADDR_BATTERY_PERCENT = 46,
@@ -245,13 +252,6 @@ enum ControlTableItemAddr{
   ADDR_GOAL_CURRENT_WR_GRIPPER  = 343,
   ADDR_GOAL_CURRENT_RD          = 344,
 
-  ADDR_ANALOG_A0 = 350,
-  ADDR_ANALOG_A1 = 352,
-  ADDR_ANALOG_A2 = 354,
-  ADDR_ANALOG_A3 = 356,
-  ADDR_ANALOG_A4 = 358,
-  ADDR_ANALOG_A5 = 360,
-
 };
 
 typedef struct ControlItemVariables{
@@ -272,9 +272,9 @@ typedef struct ControlItemVariables{
   bool push_button[2];
   bool bumper[2];
 
-  uint16_t illumination;
-  uint32_t ir_sensor;
-  float sornar;
+  // uint16_t illumination;
+  // uint32_t ir_sensor;
+  // float sornar;
 
   uint32_t bat_voltage_x100;
   uint32_t bat_percent_x100;
@@ -426,9 +426,18 @@ void TurtleBot3Core::begin(const char* model_name)
   dxl_slave.addControlItem(ADDR_BUMPER_1, control_items.bumper[0]);
   dxl_slave.addControlItem(ADDR_BUMPER_2, control_items.bumper[1]);
   // Items for Analog sensors
-  dxl_slave.addControlItem(ADDR_ILLUMINATION, control_items.illumination);
-  dxl_slave.addControlItem(ADDR_IR, control_items.ir_sensor);
-  dxl_slave.addControlItem(ADDR_SORNA, control_items.sornar);
+  // dxl_slave.addControlItem(ADDR_ILLUMINATION, control_items.illumination);
+  // dxl_slave.addControlItem(ADDR_IR, control_items.ir_sensor);
+  // dxl_slave.addControlItem(ADDR_SORNA, control_items.sornar);
+
+    // Items for Analog pins
+  dxl_slave.addControlItem(ADDR_ANALOG_A0, control_items.analog_pins[0]);
+  dxl_slave.addControlItem(ADDR_ANALOG_A1, control_items.analog_pins[1]);
+  dxl_slave.addControlItem(ADDR_ANALOG_A2, control_items.analog_pins[2]);
+  dxl_slave.addControlItem(ADDR_ANALOG_A3, control_items.analog_pins[3]);
+  dxl_slave.addControlItem(ADDR_ANALOG_A4, control_items.analog_pins[4]);
+  dxl_slave.addControlItem(ADDR_ANALOG_A5, control_items.analog_pins[5]);
+
   // Items for Battery
   dxl_slave.addControlItem(ADDR_BATTERY_VOLTAGE, control_items.bat_voltage_x100);
   dxl_slave.addControlItem(ADDR_BATTERY_PERCENT, control_items.bat_percent_x100);
@@ -467,14 +476,6 @@ void TurtleBot3Core::begin(const char* model_name)
   dxl_slave.addControlItem(ADDR_CMD_VEL_ANGULAR_Z, control_items.cmd_vel_angular[2]);  
   dxl_slave.addControlItem(ADDR_PROFILE_ACC_L, control_items.profile_acceleration[MortorLocation::LEFT]);
   dxl_slave.addControlItem(ADDR_PROFILE_ACC_R, control_items.profile_acceleration[MortorLocation::RIGHT]);
-
-  // Items for Analog pins
-  dxl_slave.addControlItem(ADDR_ANALOG_A0, control_items.analog_pins[0]);
-  dxl_slave.addControlItem(ADDR_ANALOG_A1, control_items.analog_pins[1]);
-  dxl_slave.addControlItem(ADDR_ANALOG_A2, control_items.analog_pins[2]);
-  dxl_slave.addControlItem(ADDR_ANALOG_A3, control_items.analog_pins[3]);
-  dxl_slave.addControlItem(ADDR_ANALOG_A4, control_items.analog_pins[4]);
-  dxl_slave.addControlItem(ADDR_ANALOG_A5, control_items.analog_pins[5]);
 
   if (p_tb3_model_info->has_manipulator == true) {
     control_items.joint_goal_position_wr_joint = false;
@@ -636,7 +637,7 @@ void TurtleBot3Core::run()
   update_gpios(INTERVAL_MS_TO_UPDATE_CONTROL_ITEM);
   update_motor_status(INTERVAL_MS_TO_UPDATE_CONTROL_ITEM);
   update_battery_status(INTERVAL_MS_TO_UPDATE_CONTROL_ITEM);
-  update_analog_sensors(INTERVAL_MS_TO_UPDATE_CONTROL_ITEM);
+  // update_analog_sensors(INTERVAL_MS_TO_UPDATE_CONTROL_ITEM);
   update_joint_status(INTERVAL_MS_TO_UPDATE_CONTROL_ITEM);
   update_analog_pins(INTERVAL_MS_TO_UPDATE_APINS);
 
@@ -706,8 +707,8 @@ void update_gpios(uint32_t interval_ms)
     control_items.push_button[0] = digitalRead(BDPIN_PUSH_SW_1);
     control_items.push_button[1] = digitalRead(BDPIN_PUSH_SW_2);
 
-    control_items.bumper[0] = sensors.getBumper1State();
-    control_items.bumper[1] = sensors.getBumper2State();
+    // control_items.bumper[0] = sensors.getBumper1State();
+    // control_items.bumper[1] = sensors.getBumper2State();
   }  
 }
 
@@ -729,16 +730,34 @@ void update_battery_status(uint32_t interval_ms)
   }
 }
 
-void update_analog_sensors(uint32_t interval_ms)
+// void update_analog_sensors(uint32_t interval_ms)
+// {
+//   static uint32_t pre_time = 0;
+
+//   if(millis() - pre_time >= interval_ms){
+//     pre_time = millis();
+
+//     // Original sensor functions may not exist - stub them out
+//     // control_items.illumination = (uint16_t)sensors.getIlluminationData();
+//     // control_items.ir_sensor = (uint32_t)sensors.getIRsensorData();
+//     // control_items.sornar = (float)sensors.getSonarData();
+//   }
+// }
+
+void update_analog_pins(uint32_t interval_ms)
 {
   static uint32_t pre_time = 0;
 
   if(millis() - pre_time >= interval_ms){
     pre_time = millis();
-
-    control_items.illumination = (uint16_t)sensors.getIlluminationData();
-    control_items.ir_sensor = (uint32_t)sensors.getIRsensorData();
-    control_items.sornar = (float)sensors.getSonarData();
+    
+    // Read all analog pins
+    control_items.analog_pins[0] = analogRead(A0);
+    control_items.analog_pins[1] = analogRead(A1);
+    control_items.analog_pins[2] = analogRead(A2);
+    control_items.analog_pins[3] = analogRead(A3);
+    control_items.analog_pins[4] = analogRead(A4);
+    control_items.analog_pins[5] = analogRead(A5);
   }
 }
 
@@ -1092,38 +1111,5 @@ void test_motors_with_buttons(uint8_t buttons)
       goal_velocity_from_button[VelocityType::ANGULAR]  = 0.0;
       move[VelocityType::ANGULAR] = false;
     }
-  }
-}
-
-/*******************************************************************************
-* Function definition to update analog pin values
-*******************************************************************************/
-void update_analog_pins(uint32_t interval_ms)
-{
-  static uint32_t pre_time = 0;
-
-  if(millis() - pre_time >= interval_ms){
-    pre_time = millis();
-    
-    // Read all analog pins
-    control_items.analog_pins[0] = analogRead(A0);
-    // Serial.print(control_items.analog_pins[0]);
-    // Serial.print(",");
-    control_items.analog_pins[1] = analogRead(A1);
-    // Serial.print(control_items.analog_pins[1]);
-    // Serial.print(",");
-    control_items.analog_pins[2] = analogRead(A2);
-    // Serial.print(control_items.analog_pins[2]);
-    // Serial.print(",");
-    control_items.analog_pins[3] = analogRead(A3);
-    // Serial.print(control_items.analog_pins[3]);
-    // Serial.print(",");
-    control_items.analog_pins[4] = analogRead(A4);
-    // Serial.print(control_items.analog_pins[4]);
-    // Serial.print(",");
-    control_items.analog_pins[5] = analogRead(A5);
-    // Serial.print(control_items.analog_pins[5]);
-    // Serial.println();
-
   }
 }
