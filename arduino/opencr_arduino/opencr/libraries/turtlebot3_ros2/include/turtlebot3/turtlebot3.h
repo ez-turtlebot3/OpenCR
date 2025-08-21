@@ -27,9 +27,9 @@
 #define DEBUG_ENABLE 1
 
 #if DEBUG_ENABLE
-  #define DEBUG_SERIAL_BEGIN(x) SerialBT2.begin(x)
-  #define DEBUG_PRINT(x) SerialBT2.print(x)
-  #define DEBUG_PRINTLN(x) SerialBT2.println(x)
+  #define DEBUG_SERIAL_BEGIN(x) Serial.begin(x)
+  #define DEBUG_PRINT(x) Serial.print(x)
+  #define DEBUG_PRINTLN(x) Serial.println(x)
 #else
   #define DEBUG_SERIAL_BEGIN(x) 
   #define DEBUG_PRINT(x) 
