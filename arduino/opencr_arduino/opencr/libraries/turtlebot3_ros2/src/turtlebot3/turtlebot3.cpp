@@ -291,13 +291,14 @@ void TurtleBot3Core::begin(const char* model_name)
   dxl_slave.addControlItem(ADDR_BUMPER_1, control_items.bumper[0]);
   dxl_slave.addControlItem(ADDR_BUMPER_2, control_items.bumper[1]);
 
-    // Items for Analog pins
-  dxl_slave.addControlItem(ADDR_ANALOG_A0, control_items.analog_pins[0]);
-  dxl_slave.addControlItem(ADDR_ANALOG_A1, control_items.analog_pins[1]);
-  dxl_slave.addControlItem(ADDR_ANALOG_A2, control_items.analog_pins[2]);
-  dxl_slave.addControlItem(ADDR_ANALOG_A3, control_items.analog_pins[3]);
-  dxl_slave.addControlItem(ADDR_ANALOG_A4, control_items.analog_pins[4]);
-  dxl_slave.addControlItem(ADDR_ANALOG_A5, control_items.analog_pins[5]);
+  // Items for Analog pins - only register connected pins
+  const uint16_t ANALOG_ADDRS[] = {ADDR_ANALOG_A0, ADDR_ANALOG_A1, ADDR_ANALOG_A2, 
+                                   ADDR_ANALOG_A3, ADDR_ANALOG_A4, ADDR_ANALOG_A5};
+  
+  for(uint8_t i = 0; i < CONNECTED_ANALOG_PINS_COUNT; i++){
+    uint8_t pin = CONNECTED_ANALOG_PINS[i];
+    dxl_slave.addControlItem(ANALOG_ADDRS[pin], control_items.analog_pins[pin]);
+  }
 
   // Items for Battery
   dxl_slave.addControlItem(ADDR_BATTERY_VOLTAGE, control_items.bat_voltage_x100);
@@ -406,7 +407,7 @@ void TurtleBot3Core::run()
   update_gpios(INTERVAL_MS_TO_UPDATE_CONTROL_ITEM);
   update_motor_status(INTERVAL_MS_TO_UPDATE_CONTROL_ITEM);
   update_battery_status(INTERVAL_MS_TO_UPDATE_CONTROL_ITEM);
-  update_analog_pins(INTERVAL_MS_TO_UPDATE_APINS);
+  update_analog_pins(INTERVAL_MS_TO_UPDATE_CONTROL_ITEM);
 
   // Packet processing with ROS2 Node.
   dxl_slave.processPacket();
@@ -501,13 +502,11 @@ void update_analog_pins(uint32_t interval_ms)
   if(millis() - pre_time >= interval_ms){
     pre_time = millis();
     
-    // Read all analog pins
-    control_items.analog_pins[0] = analogRead(A0);
-    control_items.analog_pins[1] = analogRead(A1);
-    control_items.analog_pins[2] = analogRead(A2);
-    control_items.analog_pins[3] = analogRead(A3);
-    control_items.analog_pins[4] = analogRead(A4);
-    control_items.analog_pins[5] = analogRead(A5);
+    // Read pins specified in CONNECTED_ANALOG_PINS
+    for(uint8_t i = 0; i < CONNECTED_ANALOG_PINS_COUNT; i++){
+      uint8_t pin = CONNECTED_ANALOG_PINS[i];
+      control_items.analog_pins[pin] = analogRead(A0 + pin);
+    }
   }
 }
 
