@@ -95,6 +95,7 @@ static void update_gpios(uint32_t interval_ms);
 static void update_motor_status(uint32_t interval_ms);
 static void update_battery_status(uint32_t interval_ms);
 static void update_analog_pins(uint32_t interval_ms);
+static void update_temp_and_humidity(uint32_t interval_ms);
 
 DYNAMIXEL::USBSerialPortHandler port_dxl_slave(SERIAL_DXL_SLAVE);
 DYNAMIXEL::Slave dxl_slave(port_dxl_slave, MODEL_NUM_DXL_SLAVE);
@@ -147,7 +148,10 @@ enum ControlTableItemAddr{
   ADDR_ORIENTATION_X      = 100,
   ADDR_ORIENTATION_Y      = 104,
   ADDR_ORIENTATION_Z      = 108,
-  
+
+  ADDR_TEMPERATURE        = 112,
+  ADDR_HUMIDITY           = 116,
+
   ADDR_PRESENT_CURRENT_L  = 120,
   ADDR_PRESENT_CURRENT_R  = 124,
   ADDR_PRESENT_VELOCITY_L = 128,
@@ -205,11 +209,15 @@ typedef struct ControlItemVariables{
   int32_t cmd_vel_angular[3];
   uint32_t profile_acceleration[MortorLocation::MOTOR_NUM_MAX];
 
-  uint16_t analog_pins[6]; // For A0-A5
+  uint16_t analog_pins[6];  // For A0-A5
+  float temperature;
+  float humidity;
 
 }ControlItemVariables;
 
 static ControlItemVariables control_items;
+
+DHT dht(DHTPIN, DHTTYPE);
 
 
 /*******************************************************************************
@@ -300,6 +308,10 @@ void TurtleBot3Core::begin(const char* model_name)
     dxl_slave.addControlItem(ANALOG_ADDRS[pin], control_items.analog_pins[pin]);
   }
 
+  // Items for temperature and humidity
+  dxl_slave.addControlItem(ADDR_TEMPERATURE, control_items.temperature);
+  dxl_slave.addControlItem(ADDR_HUMIDITY, control_items.humidity);
+
   // Items for Battery
   dxl_slave.addControlItem(ADDR_BATTERY_VOLTAGE, control_items.bat_voltage_x100);
   dxl_slave.addControlItem(ADDR_BATTERY_PERCENT, control_items.bat_percent_x100);
@@ -364,6 +376,12 @@ void TurtleBot3Core::begin(const char* model_name)
   // Set analog pin resolution to 12 bits
   analogReadResolution(12);
 
+  dht.begin();
+  
+  // Initialize temperature and humidity to sensible defaults
+  control_items.temperature = 20.0;  // 20°C default
+  control_items.humidity = 50.0;     // 50% default
+
   // To indicate that the initialization is complete.
   sensors.makeMelody(3);  // To indicate that we are running modified firmware
 
@@ -408,6 +426,7 @@ void TurtleBot3Core::run()
   update_motor_status(INTERVAL_MS_TO_UPDATE_CONTROL_ITEM);
   update_battery_status(INTERVAL_MS_TO_UPDATE_CONTROL_ITEM);
   update_analog_pins(INTERVAL_MS_TO_UPDATE_CONTROL_ITEM);
+  update_temp_and_humidity(INTERVAL_MS_TO_UPDATE_DHT22);
 
   // Packet processing with ROS2 Node.
   dxl_slave.processPacket();
@@ -506,6 +525,27 @@ void update_analog_pins(uint32_t interval_ms)
     for(uint8_t i = 0; i < CONNECTED_ANALOG_PINS_COUNT; i++){
       uint8_t pin = CONNECTED_ANALOG_PINS[i];
       control_items.analog_pins[pin] = analogRead(A0 + pin);
+    }
+  }
+}
+
+void update_temp_and_humidity(uint32_t interval_ms)
+{
+  static uint32_t pre_time = 0;
+
+  if(millis() - pre_time >= interval_ms){
+    pre_time = millis();
+    
+    // Read temperature as Celsius (the default)
+    float new_temp = dht.readTemperature();
+    float new_humidity = dht.readHumidity();
+    
+    // Only update if readings are valid (not NaN)
+    if (!isnan(new_temp)) {
+      control_items.temperature = new_temp;
+    }
+    if (!isnan(new_humidity)) {
+      control_items.humidity = new_humidity;
     }
   }
 }

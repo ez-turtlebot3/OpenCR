@@ -42,7 +42,7 @@ const uint32_t INTERVAL_MS_TO_UPDATE_CONTROL_ITEM = 20;
 const uint32_t INTERVAL_MS_TO_UPDATE_DHT22 = 2000;
 
 // Define which analog pins to read from (0-5). Modify this array to specify connected pins.
-const uint8_t CONNECTED_ANALOG_PINS[] = {0, 1, 2, 3, 4, 5};  // Example: read from A0, A2, A5
+const uint8_t CONNECTED_ANALOG_PINS[] = {2, 3, 4};
 const uint8_t CONNECTED_ANALOG_PINS_COUNT = sizeof(CONNECTED_ANALOG_PINS) / sizeof(CONNECTED_ANALOG_PINS[0]);
 
 namespace TurtleBot3Core{
