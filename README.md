@@ -9,7 +9,9 @@ There are also a couple of arduino sketches in [read_analog_pins_from_OpenCR](re
 # TurtleBot3 ROS 2 Analog-Enabled Firmware Installation
 1. Connect the OpenCR board to the PC via USB to micro USB.
 2. Install the Arduino IDE and add the OpenCR board to the boards manager following the [Robotis E-Manual](https://emanual.robotis.com/docs/en/parts/controller/opencr10/#install-on-linux).
-3. Open the IDE's Library Manager and install the Dynamixel2Arduino library.
+3. Open the IDE's Library Manager and install
+  * Dynamixel2Arduino library
+  * DHT sensor library by Adafruit with dependencies
 4. Install the Arduino CLI
   * Make sure $HOME/.local/bin is added to your $PATH in your bashrc file:
     * `echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc`
