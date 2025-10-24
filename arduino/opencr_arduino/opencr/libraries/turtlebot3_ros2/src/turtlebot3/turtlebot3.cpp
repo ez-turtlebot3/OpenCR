@@ -383,7 +383,7 @@ void TurtleBot3Core::begin(const char* model_name)
   control_items.humidity = 50.0;     // 50% default
 
   // To indicate that the initialization is complete.
-  sensors.makeMelody(3);  // To indicate that we are running modified firmware
+  sensors.makeMelody(4);  // To indicate that we are running modified firmware
 
   // Print a version message to Serial
   DEBUG_PRINTLN("Running ANALOG-ENABLED firmware V20250822");
